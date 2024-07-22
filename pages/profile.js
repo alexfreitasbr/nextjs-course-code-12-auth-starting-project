@@ -1,15 +1,21 @@
 import UserProfile from '../components/profile/user-profile';
-import { useSession} from "next-auth/react"
+import { getSession} from "next-auth/react"
 
 function ProfilePage() {
+  return <UserProfile />;
+}
 
-  const { status } = useSession()
-  if (status=== "unauthenticated") {
-    window.location.href="/auth"
+export async function getServerSideProps(context){
+  const session = await getSession({req: context.req});
+  if(!session){
+    return {
+      redirect:{
+      destination: '/auth',
+      prmanent:false
+    }
   }
-  if(status === "authenticated") return <UserProfile />;
-
-  return <p>loading</p>
+  }
+  return { props: { session } };
 }
 
 export default ProfilePage;
